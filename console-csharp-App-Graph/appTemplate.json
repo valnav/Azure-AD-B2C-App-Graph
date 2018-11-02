@@ -1,0 +1,11 @@
+{
+"displayName": "#appName#",
+"allowPublicClient": true,
+ "web": {
+      "redirectUris": [
+        "https://jwt.ms"
+      ],
+    "logoutUrl": null
+  }
+
+	}

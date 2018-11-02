@@ -31,7 +31,7 @@ namespace console_csharp_trustframeworkpolicy
             try
             {
                 graphClient = new GraphServiceClient(
-                    "https://graph.microsoft.com/v1.0",
+                    "https://graph.microsoft.com/beta",
                     new DelegateAuthenticationProvider(
                         async (requestMessage) =>
                         {

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace console_csharp_trustframeworkpolicy
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
@@ -24,6 +25,14 @@ namespace console_csharp_trustframeworkpolicy
                 // Graph client does not yet support trustFrameworkPolicy, so using HttpClient to make rest calls
                 switch (args[0].ToUpper())
                 {
+                    case "LISTAPPS":
+                        // List all polcies using "LISTAPPS"
+                        request = UserMode.HttpGetApps(Constants.AppsUri);
+                        break;
+                    case "CREATEAPP":
+                        // List all polcies using "CREATEAPP"
+                        request = UserMode.HttpPostApp(Constants.AppsUri, args[1]);
+                        break;
                     case "LIST":
                         // List all polcies using "GET /trustFrameworkPolicies"
                         request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
@@ -64,6 +73,22 @@ namespace console_csharp_trustframeworkpolicy
             }
         }
 
+        public static JObject GetContentAsJson(HttpResponseMessage response)
+        {
+            
+            string str = response.Content.ReadAsStringAsync().Result;
+            return JObject.Parse(str);
+            
+        }
+        public static HttpResponseMessage RespondAndPrint(HttpRequestMessage request)
+        {
+            Program.Print(request);
+
+            HttpClient httpClient = new HttpClient();
+            Task<HttpResponseMessage> response = httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+
+            return Program.Print(response);
+        }
         public static bool CheckValidParameters(string[] args)
         {
             if (Constants.ClientIdForUserAuthn.Equals("ENTER_YOUR_CLIENT_ID") ||
@@ -93,6 +118,15 @@ namespace console_csharp_trustframeworkpolicy
 
             switch (args[0].ToUpper())
             {
+                case "LISTAPPS":
+                    break;
+                case "CREATEAPP":
+                    if (args.Length <= 1)
+                    {
+                        PrintHelp(args);
+                        return false;
+                    }
+                    break;
                 case "LIST":
                     break;
                 case "GET":
@@ -136,7 +170,7 @@ namespace console_csharp_trustframeworkpolicy
             return true;
         }
 
-        public static void Print(Task<HttpResponseMessage> responseTask)
+        public static HttpResponseMessage Print(Task<HttpResponseMessage> responseTask)
         {
             responseTask.Wait();
             HttpResponseMessage response = responseTask.Result;
@@ -150,6 +184,7 @@ namespace console_csharp_trustframeworkpolicy
             Task<string> taskContentString = response.Content.ReadAsStringAsync();
             taskContentString.Wait();
             Console.WriteLine(taskContentString.Result);
+            return response;
         }
 
         public static void Print(HttpRequestMessage request)
@@ -170,6 +205,8 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("List                         : {0} List", appName);
+            Console.WriteLine("ListApps                     : {0} ListApps", appName);
+            Console.WriteLine("CreateApp                    : {0} CreateApp [App Name]", appName);
             Console.WriteLine("Get                          : {0} Get [PolicyID]", appName);
             Console.WriteLine("                             : {0} Get B2C_1A_PolicyName", appName);
             Console.WriteLine("Create                       : {0} Create [RelativePathToXML]", appName);

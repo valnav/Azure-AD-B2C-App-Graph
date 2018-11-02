@@ -1,0 +1,4 @@
+{
+"displayName": "#appName#",
+"isFallbackPublicClient": true
+}

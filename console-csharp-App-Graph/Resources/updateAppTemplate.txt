@@ -1,0 +1,8 @@
+{
+"web": {
+  "implicitGrantSettings": {
+            "enableIdTokenIssuance": false,
+            "enableAccessTokenIssuance": true
+        }
+    }
+}

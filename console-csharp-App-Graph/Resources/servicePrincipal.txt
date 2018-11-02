@@ -1,0 +1,5 @@
+{
+	  "accountEnabled": true,
+	  "appId": "#appId#",
+	  "appRoleAssignmentRequired": false
+}

@@ -1,0 +1,27 @@
+{
+"displayName": "#appName#",
+"allowPublicClient": true,
+    "api": {
+      "acceptedAccessTokenVersion": 2,
+      "publishedPermissionScopes": []
+    }, 
+"applicationAliases": [],
+"appRoles": [],
+"installedClients": {
+"redirectUrls": []
+},
+"keyCredentials": [],
+"orgRestrictions": [],
+"passwordCredentials": [],
+"preAuthorizedApplications": [],
+"requiredResourceAccess": [],
+"tags": [],
+    "web": {
+      "redirectUrls": [
+        "https://jwt.ms"
+      ],
+      "logoutUrl": null,
+      "oauth2AllowImplicitFlow": true
+    }
+
+	}

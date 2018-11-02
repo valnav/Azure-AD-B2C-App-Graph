@@ -1,0 +1,7 @@
+{
+    "clientId": "#appId#",
+    "consentType": "AllPrincipals",
+    "principalId": null,
+    "resourceId": "#sPId#",
+    "scope": " openid offline_access"
+}
