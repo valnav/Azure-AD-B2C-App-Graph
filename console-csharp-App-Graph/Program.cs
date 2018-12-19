@@ -33,28 +33,7 @@ namespace console_csharp_trustframeworkpolicy
                         // List all polcies using "CREATEAPP"
                         request = UserMode.HttpPostApp(Constants.AppsUri, args[1]);
                         break;
-                    //case "LIST":
-                    //    // List all polcies using "GET /trustFrameworkPolicies"
-                    //    request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
-                    //    break;
-                    //case "GET":
-                    //    // Get a specific policy using "GET /trustFrameworkPolicies/{id}"
-                    //    request = UserMode.HttpGetID(Constants.TrustFrameworkPolicyByIDUri, args[1]);
-                    //    break;
-                    //case "CREATE":
-                    //    // Create a policy using "POST /trustFrameworkPolicies" with XML in the body
-                    //    string xml = System.IO.File.ReadAllText(args[1]);
-                    //    request = UserMode.HttpPost(Constants.TrustFrameworkPolicesUri, xml);
-                    //    break;
-                    //case "UPDATE":
-                    //    // Update using "PUT /trustFrameworkPolicies/{id}" with XML in the body
-                    //    xml = System.IO.File.ReadAllText(args[2]);
-                    //    request = UserMode.HttpPutID(Constants.TrustFrameworkPolicyByIDUri, args[1], xml);
-                    //    break;
-                    //case "DELETE":
-                    //    // Delete using "DELETE /trustFrameworkPolicies/{id}"
-                    //    request = UserMode.HttpDeleteID(Constants.TrustFrameworkPolicyByIDUri, args[1]);
-                    //    break;
+                    
                     default:
                         return;
                 }
@@ -126,37 +105,7 @@ namespace console_csharp_trustframeworkpolicy
                         PrintHelp(args);
                         return false;
                     }
-                    break;
-                case "LIST":
-                    break;
-                case "GET":
-                    if (args.Length <= 1)
-                    {
-                        PrintHelp(args);
-                        return false;
-                    }
-                    break;
-                case "CREATE":
-                    if (args.Length <= 1)
-                    {
-                        PrintHelp(args);
-                        return false;
-                    }
-                    break;
-                case "UPDATE":
-                    if (args.Length <= 2)
-                    {
-                        PrintHelp(args);
-                        return false;
-                    }
-                    break;
-                case "DELETE":
-                    if (args.Length <= 1)
-                    {
-                        PrintHelp(args);
-                        return false;
-                    }
-                    break;
+                    break;               
                 case "HELP":
                     PrintHelp(args);
                     return false;
@@ -204,18 +153,8 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine("- Square brackets indicate optional arguments");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("List                         : {0} List", appName);
             Console.WriteLine("ListApps                     : {0} ListApps", appName);
             Console.WriteLine("CreateApp                    : {0} CreateApp [App Name]", appName);
-            Console.WriteLine("Get                          : {0} Get [PolicyID]", appName);
-            Console.WriteLine("                             : {0} Get B2C_1A_PolicyName", appName);
-            Console.WriteLine("Create                       : {0} Create [RelativePathToXML]", appName);
-            Console.WriteLine("                             : {0} Create policytemplate.xml", appName);
-            Console.WriteLine("Update                       : {0} Update [PolicyID] [RelativePathToXML]", appName);
-            Console.WriteLine("                             : {0} Update B2C_1A_PolicyName updatepolicy.xml", appName);
-            Console.WriteLine("Delete                       : {0} Delete [PolicyID]", appName);
-            Console.WriteLine("                             : {0} Delete B2C_1A_PolicyName", appName);
-            Console.WriteLine("Help                         : {0} Help", appName);
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("");
 
