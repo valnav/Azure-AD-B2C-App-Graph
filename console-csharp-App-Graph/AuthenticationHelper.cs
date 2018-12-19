@@ -60,6 +60,7 @@ namespace console_csharp_trustframeworkpolicy
 
             try
             {
+                Console.WriteLine($"Token: Bearer {TokenForUser}");
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", TokenForUser);
                 requestMessage.Headers.Add("SampleID", "console-csharp-trustframeworkpolicy");
             }

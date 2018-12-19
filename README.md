@@ -18,8 +18,8 @@ appId should be created in appRegPortal
 
 1. Sign in to the [Application Registration Portal](https://apps.dev.microsoft.com/) using your Microsoft account.
 1. Select **Add an app**, and enter a friendly name for the application (such as **Console App for Microsoft Graph (Delegated perms)**). Click **Create**.
-1. On the application registration page, select **Add Platform**. Select the **Native App** tile and save your change. The **delegated permissions** operations in this sample use permissions that are specified in the AuthenticationHelper.cs file. This is why you don't need to assign any permissions to the app on this page.
-1. Assign the pp only permissions Application.ReadWrite.All
+1. On the application registration page, select **Add Platform**. Select the **Native App** tile and save your change. .
+1. Assign the delegated permission Directory.Read.All, Directory.ReadWrite.All, Directory.AccessAsUser.All
 1. Note **Application Id** value for this app 
 
 #### Build and run the sample
