@@ -91,7 +91,7 @@ namespace console_csharp_trustframeworkpolicy
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
             AuthenticationHelper.AddHeaders(request);
             //create app
-            string jsonContent = Properties.Resources.appTemplate.Replace("#appName#", args[0]);
+            string jsonContent = B2CAppGraph.Properties.Resources.appTemplate.Replace("#appName#", args[0]);
             request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = Program.RespondAndPrint(request);
             var jsonObject = Program.GetContentAsJson(response); //JObject.Parse(response.Content.ToString());
@@ -105,7 +105,7 @@ namespace console_csharp_trustframeworkpolicy
                 //create SP
                 request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
                 AuthenticationHelper.AddHeaders(request);
-                jsonContent = Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
+                jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
                 request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
                 response = Program.RespondAndPrint(request);
                 jsonObject = Program.GetContentAsJson(response);
@@ -116,7 +116,7 @@ namespace console_csharp_trustframeworkpolicy
                 //create oauthPermissionGrant
                 request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
                 AuthenticationHelper.AddHeaders(request);
-                jsonContent = Properties.Resources.oAuthPermissionGrantsTemplate.Replace("#appId#", appId);
+                jsonContent = B2CAppGraph.Properties.Resources.oAuthPermissionGrantsTemplate.Replace("#appId#", appId);
                 jsonContent = jsonContent.Replace("#sPId#", sPId);
                 request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
                 response = Program.RespondAndPrint(request);
@@ -124,7 +124,7 @@ namespace console_csharp_trustframeworkpolicy
                 //patch apps
                 request = new HttpRequestMessage(new HttpMethod("PATCH"), string.Format(Constants.PatchAppsUri, appId));
                 AuthenticationHelper.AddHeaders(request);
-                jsonContent = Properties.Resources.updateAppTemplate;
+                jsonContent = B2CAppGraph.Properties.Resources.updateAppTemplate;
                 request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
                 
             }

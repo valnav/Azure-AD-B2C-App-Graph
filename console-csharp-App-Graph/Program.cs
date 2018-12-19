@@ -33,28 +33,28 @@ namespace console_csharp_trustframeworkpolicy
                         // List all polcies using "CREATEAPP"
                         request = UserMode.HttpPostApp(Constants.AppsUri, args[1]);
                         break;
-                    case "LIST":
-                        // List all polcies using "GET /trustFrameworkPolicies"
-                        request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
-                        break;
-                    case "GET":
-                        // Get a specific policy using "GET /trustFrameworkPolicies/{id}"
-                        request = UserMode.HttpGetID(Constants.TrustFrameworkPolicyByIDUri, args[1]);
-                        break;
-                    case "CREATE":
-                        // Create a policy using "POST /trustFrameworkPolicies" with XML in the body
-                        string xml = System.IO.File.ReadAllText(args[1]);
-                        request = UserMode.HttpPost(Constants.TrustFrameworkPolicesUri, xml);
-                        break;
-                    case "UPDATE":
-                        // Update using "PUT /trustFrameworkPolicies/{id}" with XML in the body
-                        xml = System.IO.File.ReadAllText(args[2]);
-                        request = UserMode.HttpPutID(Constants.TrustFrameworkPolicyByIDUri, args[1], xml);
-                        break;
-                    case "DELETE":
-                        // Delete using "DELETE /trustFrameworkPolicies/{id}"
-                        request = UserMode.HttpDeleteID(Constants.TrustFrameworkPolicyByIDUri, args[1]);
-                        break;
+                    //case "LIST":
+                    //    // List all polcies using "GET /trustFrameworkPolicies"
+                    //    request = UserMode.HttpGet(Constants.TrustFrameworkPolicesUri);
+                    //    break;
+                    //case "GET":
+                    //    // Get a specific policy using "GET /trustFrameworkPolicies/{id}"
+                    //    request = UserMode.HttpGetID(Constants.TrustFrameworkPolicyByIDUri, args[1]);
+                    //    break;
+                    //case "CREATE":
+                    //    // Create a policy using "POST /trustFrameworkPolicies" with XML in the body
+                    //    string xml = System.IO.File.ReadAllText(args[1]);
+                    //    request = UserMode.HttpPost(Constants.TrustFrameworkPolicesUri, xml);
+                    //    break;
+                    //case "UPDATE":
+                    //    // Update using "PUT /trustFrameworkPolicies/{id}" with XML in the body
+                    //    xml = System.IO.File.ReadAllText(args[2]);
+                    //    request = UserMode.HttpPutID(Constants.TrustFrameworkPolicyByIDUri, args[1], xml);
+                    //    break;
+                    //case "DELETE":
+                    //    // Delete using "DELETE /trustFrameworkPolicies/{id}"
+                    //    request = UserMode.HttpDeleteID(Constants.TrustFrameworkPolicyByIDUri, args[1]);
+                    //    break;
                     default:
                         return;
                 }
