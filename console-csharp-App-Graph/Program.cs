@@ -10,6 +10,8 @@ namespace console_csharp_trustframeworkpolicy
     {
         static void Main(string[] args)
         {
+            Console.Read();
+
             // validate parameters
             if (!CheckValidParameters(args))
                 return;

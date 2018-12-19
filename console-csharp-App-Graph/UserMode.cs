@@ -59,6 +59,7 @@ namespace console_csharp_trustframeworkpolicy
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
             AuthenticationHelper.AddHeaders(request);
+
             //create app
             string jsonContent = B2CAppGraph.Properties.Resources.appTemplate.Replace("#appName#", args[0]);
             request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
