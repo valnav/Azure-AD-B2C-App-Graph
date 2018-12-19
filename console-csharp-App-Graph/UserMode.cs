@@ -48,44 +48,13 @@ namespace console_csharp_trustframeworkpolicy
             }
         }
 
-        public static HttpRequestMessage HttpGet(string uri)
-        {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            AuthenticationHelper.AddHeaders(request);
-            return request;
-        }
-
         public static HttpRequestMessage HttpGetApps(string uri)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             AuthenticationHelper.AddHeaders(request);
             return request;
         }
-        public static HttpRequestMessage HttpGetID(string uri, string id)
-        {
-            string uriWithID = String.Format(uri, id);
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uriWithID);
-            AuthenticationHelper.AddHeaders(request);
-            return request;
-        }
-
-        public static HttpRequestMessage HttpPutID(string uri, string id, string xml)
-        {
-            string uriWithID = String.Format(uri, id);
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, uriWithID);
-            AuthenticationHelper.AddHeaders(request);
-            request.Content = new StringContent(xml, Encoding.UTF8, "application/xml");
-            return request;
-        }
-
-        public static HttpRequestMessage HttpPost(string uri, string xml)
-        {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            AuthenticationHelper.AddHeaders(request);
-            request.Content = new StringContent(xml, Encoding.UTF8, "application/xml");
-            return request;
-        }
-
+        
         public static HttpRequestMessage HttpPostApp(string uri, params string[] args)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
@@ -129,14 +98,6 @@ namespace console_csharp_trustframeworkpolicy
                 
             }
 
-            return request;
-        }
-
-        public static HttpRequestMessage HttpDeleteID(string uri, string id)
-        {
-            string uriWithID = String.Format(uri, id);
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uriWithID);
-            AuthenticationHelper.AddHeaders(request);
             return request;
         }
 
