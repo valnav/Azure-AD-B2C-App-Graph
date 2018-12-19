@@ -6,7 +6,7 @@
         //       see README.md for instructions
 
         // Client ID is the application guid used uniquely identify itself to the v2.0 authentication endpoint
-        public const string ClientIdForUserAuthn = "a26b8519-f599-4934-ad7b-8a2dba3d46fb";
+        public const string ClientIdForUserAuthn = "17ddd594-ebdc-4196-a2fc-3bd3409ff7f2";
 
         // Your tenant Name, for example "myb2ctenant.onmicrosoft.com"
         public const string Tenant = "cpimtestabhiagr.onmicrosoft.com";
