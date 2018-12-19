@@ -10,7 +10,7 @@ namespace console_csharp_trustframeworkpolicy
     {
         static void Main(string[] args)
         {
-            Console.Read();
+            // Console.Read();
 
             // validate parameters
             if (!CheckValidParameters(args))
@@ -27,11 +27,11 @@ namespace console_csharp_trustframeworkpolicy
                 // Graph client does not yet support trustFrameworkPolicy, so using HttpClient to make rest calls
                 switch (args[0].ToUpper())
                 {
-                    case "LISTAPPS":
+                    case "LIST":
                         // List all polcies using "LISTAPPS"
                         request = UserMode.HttpGetApps(Constants.AppsUri);
                         break;
-                    case "CREATEAPP":
+                    case "CREATE":
                         // List all polcies using "CREATEAPP"
                         request = UserMode.HttpPostApp(Constants.AppsUri, args[1]);
                         break;
@@ -99,9 +99,9 @@ namespace console_csharp_trustframeworkpolicy
 
             switch (args[0].ToUpper())
             {
-                case "LISTAPPS":
+                case "LIST":
                     break;
-                case "CREATEAPP":
+                case "CREATE":
                     if (args.Length <= 1)
                     {
                         PrintHelp(args);
