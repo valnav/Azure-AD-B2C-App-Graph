@@ -155,8 +155,8 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine("- Square brackets indicate optional arguments");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("ListApps                     : {0} ListApps", appName);
-            Console.WriteLine("CreateApp                    : {0} CreateApp [App Name]", appName);
+            Console.WriteLine("List                     : {0} List", appName);
+            Console.WriteLine("Create                    : {0} Create [App Name]", appName);
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("");
 
