@@ -92,11 +92,11 @@ namespace console_csharp_trustframeworkpolicy
                 response = Program.RespondAndPrint(request);
 
                 //patch apps
-                request = new HttpRequestMessage(new HttpMethod("PATCH"), string.Format(Constants.PatchAppsUri, appId));
-                AuthenticationHelper.AddHeaders(request);
-                jsonContent = B2CAppGraph.Properties.Resources.updateAppTemplate;
-                request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                
+                //request = new HttpRequestMessage(new HttpMethod("PATCH"), string.Format(Constants.PatchAppsUri, appId));
+                //AuthenticationHelper.AddHeaders(request);
+                //jsonContent = B2CAppGraph.Properties.Resources.updateAppTemplate;
+                //request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
             }
 
             return request;
