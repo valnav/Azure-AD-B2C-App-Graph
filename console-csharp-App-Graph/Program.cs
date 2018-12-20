@@ -33,7 +33,7 @@ namespace console_csharp_trustframeworkpolicy
                         break;
                     case "CREATE":
                         // List all polcies using "CREATEAPP"
-                        request = UserMode.HttpPostApp(Constants.AppsUri, args[1]);
+                        request = UserMode.CreateApp(Constants.AppsUri, args[1]);
                         break;
                     
                     default:
