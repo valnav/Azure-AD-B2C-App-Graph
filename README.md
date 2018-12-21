@@ -4,13 +4,8 @@
 
 This sample demonstrates the following:
 
-* **Create** a V2 App which ca be used in B2C
+* **Create** a V2 App using Microsoft Graph Apis which can be used in B2C
 * **List** all v2 apps in the tenant
-
-
-Change tenantId and appId in the sample. 
-appId should be created in appRegPortal
-
 
 ## Getting Started
 
