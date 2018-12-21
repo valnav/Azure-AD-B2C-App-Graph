@@ -10,66 +10,57 @@ namespace console_csharp_trustframeworkpolicy
     {
         static void Main(string[] args)
         {
-            // Console.Read();
+             Console.Read();
 
             // validate parameters
             if (!CheckValidParameters(args))
                 return;
 
-            HttpRequestMessage request = null;
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
-            try
-            {
-                // Login as global admin of the Azure AD B2C tenant
-                UserMode.LoginAsAdmin();
+            // Login as global admin of the Azure AD B2C tenant
+            UserMode.LoginAsAdmin();
 
-                // Graph client does not yet support trustFrameworkPolicy, so using HttpClient to make rest calls
-                switch (args[0].ToUpper())
-                {
-                    case "LIST":
-                        // List all polcies using "LISTAPPS"
-                        request = UserMode.HttpGetApps(Constants.AppsUri);
-                        break;
-                    case "CREATE":
-                        // List all polcies using "CREATEAPP"
-                        request = UserMode.CreateApp(Constants.AppsUri, args[1]);
-                        break;
+            // Graph client does not yet support trustFrameworkPolicy, so using HttpClient to make rest calls
+            switch (args[0].ToUpper())
+            {
+                case "LIST":
+                    // List all polcies using "LISTAPPS"
+                    UserMode.HttpGetApps(Constants.AppsUri);
+                    break;
+                case "CREATE":
+                    // List all polcies using "CREATEAPP"
+                    UserMode.CreateApp(Constants.AppsUri, args[1]);
+                    break;
                     
-                    default:
-                        return;
-                }
-
-                Print(request);
-
-                HttpClient httpClient = new HttpClient();
-                Task<HttpResponseMessage> response = httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
-
-                Print(response);
+                default:
+                    return;
             }
-            catch (Exception e)
-            {
-                Print(request);
-                Console.WriteLine("\nError {0} {1}", e.Message, e.InnerException != null ? e.InnerException.Message : "");
-            }
+            
         }
 
         public static JObject GetContentAsJson(HttpResponseMessage response)
-        {
-            
+        {            
             string str = response.Content.ReadAsStringAsync().Result;
-            return JObject.Parse(str);
-            
+            return JObject.Parse(str);           
         }
+
         public static HttpResponseMessage RespondAndPrint(HttpRequestMessage request)
+        {
+            var response = GetResponse(request);
+
+            return Program.Print(response);
+        }
+
+        public static HttpResponseMessage GetResponse(HttpRequestMessage request)
         {
             Program.Print(request);
 
             HttpClient httpClient = new HttpClient();
             Task<HttpResponseMessage> response = httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
-
-            return Program.Print(response);
+            return response.Result;
         }
+
         public static bool CheckValidParameters(string[] args)
         {
             if (Constants.ClientIdForUserAuthn.Equals("ENTER_YOUR_CLIENT_ID") ||
@@ -121,20 +112,16 @@ namespace console_csharp_trustframeworkpolicy
             return true;
         }
 
-        public static HttpResponseMessage Print(Task<HttpResponseMessage> responseTask)
-        {
-            responseTask.Wait();
-            HttpResponseMessage response = responseTask.Result;
-
+        public static HttpResponseMessage Print(HttpResponseMessage response)
+        {        
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Error Calling the Graph API HTTP Status={0}", response.StatusCode);
             }
 
             Console.WriteLine(response.Headers);
-            Task<string> taskContentString = response.Content.ReadAsStringAsync();
-            taskContentString.Wait();
-            Console.WriteLine(taskContentString.Result);
+            string contentString = response.Content.ReadAsStringAsync().Result;
+            Console.WriteLine(contentString);
             return response;
         }
 

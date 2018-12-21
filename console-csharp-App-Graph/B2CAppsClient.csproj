@@ -78,6 +78,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ODataListWrapper.cs" />
+    <Compile Include="ServicePrincipal.cs" />
     <Compile Include="UserMode.cs" />
   </ItemGroup>
   <ItemGroup>
