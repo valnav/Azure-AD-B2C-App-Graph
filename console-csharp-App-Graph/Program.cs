@@ -10,7 +10,7 @@ namespace console_csharp_trustframeworkpolicy
     {
         static void Main(string[] args)
         {
-             Console.Read();
+            //Console.Read();
 
             // validate parameters
             if (!CheckValidParameters(args))
@@ -25,19 +25,12 @@ namespace console_csharp_trustframeworkpolicy
             switch (args[0].ToUpper())
             {
                 case "LIST":
-                    // List all polcies using "LISTAPPS"
                     UserMode.HttpGetApps(Constants.AppsUri);
                     break;
-                case "CREATE1":
-                    // List all polcies using "CREATEAPP"
+                case "CREATE":
                     UserMode.CreateApp(Constants.AppsUri, args[1]);
                     break;
-
-                case "CREATE2":
-                    // List all polcies using "CREATEAPP"
-                    UserMode.CreateApp(Constants.AppsUri, args[1]);
-                    break;
-
+                              
                 default:
                     return;
             }
@@ -148,8 +141,7 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("List                     : {0} List", appName);
-            Console.WriteLine("Create using MSGraphApis only                    : {0} Create1 [App Name]", appName);
-            Console.WriteLine("Create using MSGraph App and AAd Graph SP Apis                     : {0} Create2 [App Name]", appName);
+            Console.WriteLine("Create using MSGraphApis only                    : {0} Create [App Name]", appName);
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("");
 
