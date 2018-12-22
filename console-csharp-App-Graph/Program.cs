@@ -25,17 +25,14 @@ namespace console_csharp_trustframeworkpolicy
             switch (args[0].ToUpper())
             {
                 case "LIST":
-                    // List all polcies using "LISTAPPS"
                     UserMode.HttpGetApps(Constants.AppsUri);
                     break;
                 case "CREATE1":
-                    // List all polcies using "CREATEAPP"
-                    UserMode.CreateApp(Constants.AppsUri, args[1]);
+                    UserMode.CreateFullAppUsingMSGraphOnly(args[1]);
                     break;
 
                 case "CREATE2":
-                    // List all polcies using "CREATEAPP"
-                    UserMode.CreateApp(Constants.AppsUri, args[1]);
+                    UserMode.CreateFullAppUsingMSGraphAndAadGraph(Constants.AppsUri, args[1]);
                     break;
 
                 default:

@@ -62,33 +62,27 @@ namespace console_csharp_trustframeworkpolicy
             Program.RespondAndPrint(request);
         }
         
-        public static void CreateApp(string uri, params string[] args)
+        public static void CreateFullAppUsingMSGraphAndAadGraph(string uri, string appName)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            AuthenticationHelper.AddHeaders(request);
+            string appId = CreateAppFromMSGraph(appName);
 
-            // create app
-            string jsonContent = B2CAppGraph.Properties.Resources.appTemplate.Replace("#appName#", args[0]);
-            request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-            var response = Program.RespondAndPrint(request);
-            var jsonObject = Program.GetContentAsJson(response); //JObject.Parse(response.Content.ToString());
-            JToken token;
-            jsonObject.TryGetValue("appId", out token);
-            string appId, sPId;
-            appId = token.Value<string>();
+        }
 
-            Console.WriteLine("newly created app: {0}", appId);
-            if (token != null)
+        public static void CreateFullAppUsingMSGraphOnly(string appName)
+        {
+            string appId = CreateAppFromMSGraph(appName);
+
+            if (appId != null)
             {
                 // create SP
-                request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
+                var request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
                 AuthenticationHelper.AddHeaders(request);
-                jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
+                var jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
                 request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                response = Program.RespondAndPrint(request);
-                jsonObject = Program.GetContentAsJson(response);
-                jsonObject.TryGetValue("id", out token);
-                sPId = token.Value<string>();
+                var response = Program.RespondAndPrint(request);
+                var jsonObject = Program.GetContentAsJson(response);
+                jsonObject.TryGetValue("id", out JToken token);
+                var sPId = token.Value<string>();
                 Console.WriteLine("newly created SP: {0}", sPId);
 
                 string msGraphSPId = GetMsGraphSPId();
@@ -100,10 +94,30 @@ namespace console_csharp_trustframeworkpolicy
                 jsonContent = B2CAppGraph.Properties.Resources.oAuthPermissionGrantsTemplate;
                 jsonContent = jsonContent
                     .Replace("#spId#", sPId)
-                    .Replace("#MSGraphSPID#", msGraphSPId);                
+                    .Replace("#MSGraphSPID#", msGraphSPId);
                 request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
                 response = Program.RespondAndPrint(request);
             }
+        }
+
+        private static string CreateAppFromMSGraph(string appName)
+        {
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Constants.AppsUri);
+            AuthenticationHelper.AddHeaders(request);
+
+            // create app
+            var jsonContent = B2CAppGraph.Properties.Resources.appTemplate.Replace("#appName#", appName);
+            request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var response = Program.RespondAndPrint(request);
+            var jsonObject = Program.GetContentAsJson(response);
+
+            JToken token;
+            jsonObject.TryGetValue("appId", out token);
+            var appId = token.Value<string>();
+
+            Console.WriteLine("newly created app: {0}", appId);
+
+            return appId;
         }
 
         private static JsonSerializerSettings GetJsonSerializerSettings()
