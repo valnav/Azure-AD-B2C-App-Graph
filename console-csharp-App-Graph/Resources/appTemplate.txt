@@ -1,4 +1,13 @@
 {
-"displayName": "#appName#",
-"isFallbackPublicClient": true
+    "displayName": "#appName#",
+    "isFallbackPublicClient": false,
+    "web": {
+        "redirectUris": [
+            "https://jwt.ms"
+        ],
+		 "implicitGrantSettings": {
+                    "enableIdTokenIssuance": false,
+                    "enableAccessTokenIssuance": true
+        }
+    }
 }

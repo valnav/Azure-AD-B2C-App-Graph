@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CPolicyClient", "console-csharp-App-Graph\B2CPolicyClient.csproj", "{6A3A724C-5985-494F-9FFE-2C1DD10E789F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CAppsClient", "console-csharp-App-Graph\B2CAppsClient.csproj", "{6A3A724C-5985-494F-9FFE-2C1DD10E789F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +18,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {63699AFA-E6E9-421C-A826-EA7527A95812}
 	EndGlobalSection
 EndGlobal

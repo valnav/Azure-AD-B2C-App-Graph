@@ -15,7 +15,7 @@ namespace console_csharp_trustframeworkpolicy
         // By public preview, this API will require Policy.ReadWrite.All permission as an admin-only scope,
         // so authorization will fail if you sign in with a non-admin account.
         // For now, this API is only accessible on tenants that have been whitelisted
-        public static string[] Scopes = { "User.Read" };
+        public static string[] Scopes = { "User.Read Directory.Read.All Directory.ReadWrite.All" };
 
         public static PublicClientApplication IdentityClientApp = new PublicClientApplication(Constants.ClientIdForUserAuthn);
         public static string TokenForUser = null;
@@ -37,8 +37,7 @@ namespace console_csharp_trustframeworkpolicy
                         {
                             var token = await GetTokenForUserAsync();
                             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
-                            // This header has been added to identify usage of this sample in the Microsoft Graph service.  You are free to remove it without impacting functionlity.
-                            requestMessage.Headers.Add("SampleID", "console-csharp-trustframeworkpolicy");
+                            // This header has been added to identify usage of this sample in the Microsoft Graph service.  You are free to remove it without impacting functionlity.                            
                         }));
                 return graphClient;
             }
@@ -60,8 +59,8 @@ namespace console_csharp_trustframeworkpolicy
 
             try
             {
-                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", TokenForUser);
-                requestMessage.Headers.Add("SampleID", "console-csharp-trustframeworkpolicy");
+                //Console.WriteLine($"Token: Bearer {TokenForUser}");
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", TokenForUser);                
             }
             catch (Exception ex)
             {

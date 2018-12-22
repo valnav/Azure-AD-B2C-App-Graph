@@ -4,12 +4,19 @@ using System.Threading.Tasks;
 using Microsoft.Graph;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
+using B2CAppGraph;
+using System.Linq;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using Newtonsoft.Json.Serialization;
+
 namespace console_csharp_trustframeworkpolicy
 {
     internal class UserMode
     {
         public static GraphServiceClient client;
 
+        public const string MSGraphAppId = "00000003-0000-0000-c000-000000000000";
 
         public static bool CreateGraphClient()
         {
@@ -48,50 +55,20 @@ namespace console_csharp_trustframeworkpolicy
             }
         }
 
-        public static HttpRequestMessage HttpGet(string uri)
+        public static void HttpGetApps(string uri)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             AuthenticationHelper.AddHeaders(request);
-            return request;
+            Program.RespondAndPrint(request);
         }
-
-        public static HttpRequestMessage HttpGetApps(string uri)
-        {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            AuthenticationHelper.AddHeaders(request);
-            return request;
-        }
-        public static HttpRequestMessage HttpGetID(string uri, string id)
-        {
-            string uriWithID = String.Format(uri, id);
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uriWithID);
-            AuthenticationHelper.AddHeaders(request);
-            return request;
-        }
-
-        public static HttpRequestMessage HttpPutID(string uri, string id, string xml)
-        {
-            string uriWithID = String.Format(uri, id);
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, uriWithID);
-            AuthenticationHelper.AddHeaders(request);
-            request.Content = new StringContent(xml, Encoding.UTF8, "application/xml");
-            return request;
-        }
-
-        public static HttpRequestMessage HttpPost(string uri, string xml)
+        
+        public static void CreateApp(string uri, params string[] args)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
             AuthenticationHelper.AddHeaders(request);
-            request.Content = new StringContent(xml, Encoding.UTF8, "application/xml");
-            return request;
-        }
 
-        public static HttpRequestMessage HttpPostApp(string uri, params string[] args)
-        {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            AuthenticationHelper.AddHeaders(request);
-            //create app
-            string jsonContent = Properties.Resources.appTemplate.Replace("#appName#", args[0]);
+            // create app
+            string jsonContent = B2CAppGraph.Properties.Resources.appTemplate.Replace("#appName#", args[0]);
             request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = Program.RespondAndPrint(request);
             var jsonObject = Program.GetContentAsJson(response); //JObject.Parse(response.Content.ToString());
@@ -99,45 +76,60 @@ namespace console_csharp_trustframeworkpolicy
             jsonObject.TryGetValue("appId", out token);
             string appId, sPId;
             appId = token.Value<string>();
+
             Console.WriteLine("newly created app: {0}", appId);
             if (token != null)
             {
-                //create SP
+                // create SP
                 request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
                 AuthenticationHelper.AddHeaders(request);
-                jsonContent = Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
+                jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
                 request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
                 response = Program.RespondAndPrint(request);
                 jsonObject = Program.GetContentAsJson(response);
-
                 jsonObject.TryGetValue("id", out token);
                 sPId = token.Value<string>();
+                Console.WriteLine("newly created SP: {0}", sPId);
+
+                string msGraphSPId = GetMsGraphSPId();
+                Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
 
                 //create oauthPermissionGrant
-                request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
+                request = new HttpRequestMessage(HttpMethod.Post, Constants.OAuthPermissionGrantsUri);
                 AuthenticationHelper.AddHeaders(request);
-                jsonContent = Properties.Resources.oAuthPermissionGrantsTemplate.Replace("#appId#", appId);
-                jsonContent = jsonContent.Replace("#sPId#", sPId);
+                jsonContent = B2CAppGraph.Properties.Resources.oAuthPermissionGrantsTemplate;
+                jsonContent = jsonContent
+                    .Replace("#spId#", sPId)
+                    .Replace("#MSGraphSPID#", msGraphSPId);                
                 request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
                 response = Program.RespondAndPrint(request);
-
-                //patch apps
-                request = new HttpRequestMessage(new HttpMethod("PATCH"), string.Format(Constants.PatchAppsUri, appId));
-                AuthenticationHelper.AddHeaders(request);
-                jsonContent = Properties.Resources.updateAppTemplate;
-                request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                
             }
-
-            return request;
         }
 
-        public static HttpRequestMessage HttpDeleteID(string uri, string id)
+        private static JsonSerializerSettings GetJsonSerializerSettings()
         {
-            string uriWithID = String.Format(uri, id);
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uriWithID);
+            return new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+        }
+
+        private static string GetMsGraphSPId()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, Constants.SPUri);
             AuthenticationHelper.AddHeaders(request);
-            return request;
+            string response = Program.GetResponse(request).Content.ReadAsStringAsync().Result;
+
+            var wrapper = JsonConvert.DeserializeObject<ODataListWrapper<List<ServicePrincipal>>>(response, GetJsonSerializerSettings());
+            var spList = wrapper.Value;
+            var graphSp = spList.FirstOrDefault(x => x.AppId.Equals(MSGraphAppId));
+            if (graphSp == null)
+            {
+                throw new Exception($"Service principal for MSgraph app {MSGraphAppId} is not found in tenant");
+            }
+
+            return graphSp.Id;
         }
 
         public static void LoginAsAdmin()
