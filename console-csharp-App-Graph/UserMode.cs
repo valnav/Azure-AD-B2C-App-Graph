@@ -15,7 +15,6 @@ namespace console_csharp_trustframeworkpolicy
     internal class UserMode
     {
         public static GraphServiceClient client;
-        public static GraphServiceClient aadClient;
 
         public const string MSGraphAppId = "00000003-0000-0000-c000-000000000000";
 
@@ -72,10 +71,8 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="appName">Name of the application.</param>
         public static void CreateFullAppUsingMSGraphAndAadGraph(string appName)
         {
-            aadClient = AADGraphAuthenticationHelper.GetAuthenticatedClientForUser();
-            User user = client.Me.Request().GetAsync().Result;
-            Console.WriteLine("AAD Current user:    Id: {0}  UPN: {1}", user.Id, user.UserPrincipalName);
-
+            var token = AADGraphAuthenticationHelper.GetTokenForUserAsync().Result;
+                        
             //string appId = CreateAppFromMSGraph(appName);
             var request = new HttpRequestMessage(HttpMethod.Get, Constants.AadGraphSPUri);
             AADGraphAuthenticationHelper.AddHeaders(request);

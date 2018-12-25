@@ -11,7 +11,7 @@ namespace console_csharp_trustframeworkpolicy
 {
     class AuthenticationHelper
     {
-        public static string[] Scopes = { "User.Read Directory.Read.All Directory.ReadWrite.All" };
+        public static string[] Scopes = { "User.Read", "Directory.Read.All", "Directory.ReadWrite.All" };
 
         public static PublicClientApplication IdentityClientApp = new PublicClientApplication(Constants.ClientIdForUserAuthn);
         public static string TokenForUser = null;
@@ -27,13 +27,12 @@ namespace console_csharp_trustframeworkpolicy
             try
             {
                 graphClient = new GraphServiceClient(
-                    "https://graph.microsoft.com/beta/",
+                    "https://graph.microsoft.com/beta",
                     new DelegateAuthenticationProvider(
                         async (requestMessage) =>
                         {
                             var token = await GetTokenForUserAsync();
                             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
-                            // This header has been added to identify usage of this sample in the Microsoft Graph service.  You are free to remove it without impacting functionlity.                            
                         }));
                 return graphClient;
             }

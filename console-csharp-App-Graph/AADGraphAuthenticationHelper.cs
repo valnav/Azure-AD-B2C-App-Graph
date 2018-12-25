@@ -11,52 +11,24 @@ namespace console_csharp_trustframeworkpolicy
 {
     class AADGraphAuthenticationHelper
     {
-        public static string[] Scopes = { "User.Read Directory.Read.All Directory.ReadWrite.All" };
+        const string ResourceId = "https://graph.windows.net/";
+        public static string[] Scopes = { ResourceId + "User.Read", ResourceId + "Directory.Read.All", ResourceId + "Directory.ReadWrite.All" };
 
         public static PublicClientApplication IdentityClientApp = new PublicClientApplication(Constants.ClientIdForUserAuthn);
         public static string TokenForUser = null;
         public static DateTimeOffset Expiration;
 
-        private static GraphServiceClient graphClient = null;
-
-        // Get an access token for the given context and resourceId. An attempt is first made to 
-        // acquire the token silently. If that fails, then we try to acquire the token by prompting the user.
-        public static GraphServiceClient GetAuthenticatedClientForUser()
-        {
-            // Create Microsoft Graph client.
-            try
-            {
-                graphClient = new GraphServiceClient(
-                    "https://graph.windows.net/",
-                    new DelegateAuthenticationProvider(
-                        async (requestMessage) =>
-                        {
-                            var token = await GetTokenForUserAsync();
-                            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
-                            // This header has been added to identify usage of this sample in the Microsoft Graph service.  You are free to remove it without impacting functionlity.                            
-                        }));
-                return graphClient;
-            }
-
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Could not create a graph client: " + ex.Message);
-            }
-
-            return graphClient;
-        }
-
         public static void AddHeaders(HttpRequestMessage requestMessage)
         {
-            if(TokenForUser == null)
+            if (TokenForUser == null)
             {
-                Debug.WriteLine("Call GetAuthenticatedClientForUser first");
+                Debug.WriteLine("Call GetTokenForUserAsync first");
             }
 
             try
             {
-                Console.WriteLine($"Token: Bearer {TokenForUser}");
-                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", TokenForUser);                
+                //Console.WriteLine($"Token: Bearer {TokenForUser}");
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", TokenForUser);
             }
             catch (Exception ex)
             {
@@ -77,8 +49,9 @@ namespace console_csharp_trustframeworkpolicy
                 TokenForUser = authResult.AccessToken;
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.Write(ex.Message);
                 if (TokenForUser == null || Expiration <= DateTimeOffset.UtcNow.AddMinutes(5))
                 {
                     authResult = await IdentityClientApp.AcquireTokenAsync(Scopes);
@@ -100,7 +73,6 @@ namespace console_csharp_trustframeworkpolicy
             {
                 IdentityClientApp.Remove(user);
             }
-            graphClient = null;
             TokenForUser = null;
         }
 
