@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AADGraphAuthenticationHelper.cs" />
     <Compile Include="AuthenticationHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Program.cs" />

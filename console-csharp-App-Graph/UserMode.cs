@@ -15,6 +15,7 @@ namespace console_csharp_trustframeworkpolicy
     internal class UserMode
     {
         public static GraphServiceClient client;
+        public static GraphServiceClient aadClient;
 
         public const string MSGraphAppId = "00000003-0000-0000-c000-000000000000";
 
@@ -62,14 +63,28 @@ namespace console_csharp_trustframeworkpolicy
             Program.RespondAndPrint(request);
         }
 
+        /// <summary>
+        /// Creates the full application using ms graph and aad graph.
+        /// This api calls all the first steps on MSGraph - app creation
+        /// Calls later two on AADGraph, SP creation, permission grant
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <param name="appName">Name of the application.</param>
         public static void CreateFullAppUsingMSGraphAndAadGraph(string uri, string appName)
         {
-            string appId = CreateAppFromMSGraph(appName);
+            aadClient = AADGraphAuthenticationHelper.GetAuthenticatedClientForUser();
+
+            //string appId = CreateAppFromMSGraph(appName);
 
 
 
         }
 
+        /// <summary>
+        /// Creates the full application using ms graph only.
+        /// This api calls all the three steps on MSGraph - app creation, SP creation, permission grant
+        /// </summary>
+        /// <param name="appName">Name of the application.</param>
         public static void CreateFullAppUsingMSGraphOnly(string appName)
         {
             string appId = CreateAppFromMSGraph(appName);
