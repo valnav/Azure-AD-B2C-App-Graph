@@ -61,10 +61,12 @@ namespace console_csharp_trustframeworkpolicy
             AuthenticationHelper.AddHeaders(request);
             Program.RespondAndPrint(request);
         }
-        
+
         public static void CreateFullAppUsingMSGraphAndAadGraph(string uri, string appName)
         {
             string appId = CreateAppFromMSGraph(appName);
+
+
 
         }
 
@@ -72,34 +74,39 @@ namespace console_csharp_trustframeworkpolicy
         {
             string appId = CreateAppFromMSGraph(appName);
 
-            if (appId != null)
-            {
-                // create SP
-                var request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
-                AuthenticationHelper.AddHeaders(request);
-                var jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
-                request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                var response = Program.RespondAndPrint(request);
-                var jsonObject = Program.GetContentAsJson(response);
-                jsonObject.TryGetValue("id", out JToken token);
-                var sPId = token.Value<string>();
-                Console.WriteLine("newly created SP: {0}", sPId);
+            // create SP
+            var request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
+            AuthenticationHelper.AddHeaders(request);
+            var jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
+            request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var response = Program.RespondAndPrint(request);
+            var jsonObject = Program.GetContentAsJson(response);
+            jsonObject.TryGetValue("id", out JToken token);
+            var sPId = token.Value<string>();
+            Console.WriteLine("newly created SP: {0}", sPId);
 
-                string msGraphSPId = GetMsGraphSPId();
-                Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
+            string msGraphSPId = GetMsGraphSPId();
+            Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
 
-                //create oauthPermissionGrant
-                request = new HttpRequestMessage(HttpMethod.Post, Constants.OAuthPermissionGrantsUri);
-                AuthenticationHelper.AddHeaders(request);
-                jsonContent = B2CAppGraph.Properties.Resources.oAuthPermissionGrantsTemplate;
-                jsonContent = jsonContent
-                    .Replace("#spId#", sPId)
-                    .Replace("#MSGraphSPID#", msGraphSPId);
-                request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                response = Program.RespondAndPrint(request);
-            }
+            //create oauthPermissionGrant
+            request = new HttpRequestMessage(HttpMethod.Post, Constants.OAuthPermissionGrantsUri);
+            AuthenticationHelper.AddHeaders(request);
+            jsonContent = B2CAppGraph.Properties.Resources.oAuthPermissionGrantsTemplate;
+            jsonContent = jsonContent
+                .Replace("#spId#", sPId)
+                .Replace("#MSGraphSPID#", msGraphSPId);
+            request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            response = Program.RespondAndPrint(request);
+
         }
 
+
+        /// <summary>
+        /// The app creation always happens in MSGraph Beta. since v2 apps can't be created in AADGraph
+        /// </summary>
+        /// <param name="appName">Name of the application.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">App wasn't created</exception>
         private static string CreateAppFromMSGraph(string appName)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Constants.AppsUri);
@@ -114,6 +121,11 @@ namespace console_csharp_trustframeworkpolicy
             JToken token;
             jsonObject.TryGetValue("appId", out token);
             var appId = token.Value<string>();
+
+            if (string.IsNullOrWhiteSpace(appId))
+            {
+                throw new Exception("App wasn't created");
+            }
 
             Console.WriteLine("newly created app: {0}", appId);
 
