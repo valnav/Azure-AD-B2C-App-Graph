@@ -70,14 +70,16 @@ namespace console_csharp_trustframeworkpolicy
         /// </summary>
         /// <param name="uri">The URI.</param>
         /// <param name="appName">Name of the application.</param>
-        public static void CreateFullAppUsingMSGraphAndAadGraph(string uri, string appName)
+        public static void CreateFullAppUsingMSGraphAndAadGraph(string appName)
         {
             aadClient = AADGraphAuthenticationHelper.GetAuthenticatedClientForUser();
+            User user = client.Me.Request().GetAsync().Result;
+            Console.WriteLine("AAD Current user:    Id: {0}  UPN: {1}", user.Id, user.UserPrincipalName);
 
             //string appId = CreateAppFromMSGraph(appName);
-
-
-
+            var request = new HttpRequestMessage(HttpMethod.Get, Constants.AadGraphSPUri);
+            AADGraphAuthenticationHelper.AddHeaders(request);
+            var response = Program.RespondAndPrint(request);
         }
 
         /// <summary>
@@ -90,7 +92,7 @@ namespace console_csharp_trustframeworkpolicy
             string appId = CreateAppFromMSGraph(appName);
 
             // create SP
-            var request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
+            var request = new HttpRequestMessage(HttpMethod.Post, Constants.MSGraphSPUri);
             AuthenticationHelper.AddHeaders(request);
             var jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
             request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -104,7 +106,7 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
 
             //create oauthPermissionGrant
-            request = new HttpRequestMessage(HttpMethod.Post, Constants.OAuthPermissionGrantsUri);
+            request = new HttpRequestMessage(HttpMethod.Post, Constants.MSGraphOAuthPermissionGrantsUri);
             AuthenticationHelper.AddHeaders(request);
             jsonContent = B2CAppGraph.Properties.Resources.oAuthPermissionGrantsTemplate;
             jsonContent = jsonContent
@@ -158,7 +160,7 @@ namespace console_csharp_trustframeworkpolicy
 
         private static string GetMsGraphSPId()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, Constants.SPUri);
+            var request = new HttpRequestMessage(HttpMethod.Get, Constants.MSGraphSPUri);
             AuthenticationHelper.AddHeaders(request);
             string response = Program.GetResponse(request).Content.ReadAsStringAsync().Result;
 

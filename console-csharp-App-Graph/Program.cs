@@ -10,7 +10,7 @@ namespace console_csharp_trustframeworkpolicy
     {
         static void Main(string[] args)
         {
-            //Console.Read();
+            Console.Read();
 
             // validate parameters
             if (!CheckValidParameters(args))
@@ -32,7 +32,7 @@ namespace console_csharp_trustframeworkpolicy
                     break;
 
                 case "CREATE2":
-                    UserMode.CreateFullAppUsingMSGraphAndAadGraph(Constants.AppsUri, args[1]);
+                    UserMode.CreateFullAppUsingMSGraphAndAadGraph(args[1]);
                     break;
                               
                 default:

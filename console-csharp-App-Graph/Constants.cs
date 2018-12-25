@@ -18,7 +18,10 @@
         // leave these as-is - Private Preview Graph URIs for custom trust framework policy
         public const string AppsUri = "https://graph.microsoft.com/beta/applications";
         public const string PatchAppsUri = "https://graph.microsoft.com/beta/applications/{0}";
-        public const string SPUri = "https://graph.microsoft.com/beta/serviceprincipals";
-        public const string OAuthPermissionGrantsUri = "https://graph.microsoft.com/beta/oauth2PermissionGrants";        
+        public const string MSGraphSPUri = "https://graph.microsoft.com/beta/serviceprincipals";
+        public const string MSGraphOAuthPermissionGrantsUri = "https://graph.microsoft.com/beta/oauth2PermissionGrants";
+
+        public const string AadGraphSPUri = "https://graph.windows.net/myorganization/servicePrincipals?api-version=1.6";
+        public const string AadGraphOAuthPermissionGrantsUri = "https://graph.microsoft.com/beta/oauth2PermissionGrants?api-version=1.6";
     }
 }
