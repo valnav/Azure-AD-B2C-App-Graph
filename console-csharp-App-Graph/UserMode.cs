@@ -9,6 +9,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
+using System.Net.Http.Headers;
 
 namespace console_csharp_trustframeworkpolicy
 {
@@ -76,7 +77,14 @@ namespace console_csharp_trustframeworkpolicy
             var aadGraphToken = AADGraphAuthenticationHelper.GetTokenForUserAsync().Result;
             //Console.WriteLine($"Token: Bearer {aadGraphToken}");
 
-            
+            // create SP
+            string spId = CreateServicePrincipal(appId, Constants.AadGraphSPUri, aadGraphToken);
+
+            string msGraphSPId = GetMsGraphSPId(Constants.AadGraphSPUri, aadGraphToken);
+            Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
+
+            //create oauthPermissionGrant
+            GrantConsent(spId, msGraphSPId, Constants.AadGraphOAuthPermissionGrantsUri, aadGraphToken);
         }
 
         /// <summary>
@@ -86,29 +94,34 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="appName">Name of the application.</param>
         public static void CreateFullAppUsingMSGraphOnly(string appName)
         {
+            string token = AuthenticationHelper.TokenForUser;
             string appId = CreateAppFromMSGraph(appName);
 
             // create SP
-            string spId = CreateServicePrincipal(appId, shouldUseMSGraphOrAADGraph: true);
+            string spId = CreateServicePrincipal(appId, Constants.MSGraphSPUri, token);
 
-            string msGraphSPId = GetMsGraphSPId(shouldUseMSGraphOrAADGraph: true);
+            string msGraphSPId = GetMsGraphSPId(Constants.MSGraphSPUri, token);
             Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
 
             //create oauthPermissionGrant
-            GrantConsent(msGraphSPId, shouldUseMSGraphOrAADGraph: true);
+            GrantConsent(spId, msGraphSPId, Constants.MSGraphOAuthPermissionGrantsUri, token);
         }
 
-        private static void GrantConsent(string msGraphSPId, bool shouldUseMSGraphOrAADGraph)
+        /// <summary>
+        /// Grants the consent.
+        /// </summary>
+        /// <param name="msGraphSPId">The ms graph sp identifier.</param>
+        /// <param name="uri">The URI.</param>
+        /// <param name="authtoken">The authtoken.</param>
+        private static void GrantConsent(string spId, string msGraphSPId, string uri, string authtoken)
         {
-            string uri = (shouldUseMSGraphOrAADGraph) 
-                ? Constants.MSGraphOAuthPermissionGrantsUri 
-                : Constants.AadGraphOAuthPermissionGrantsUri;
+            var request = new HttpRequestMessage(HttpMethod.Post, uri);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, Constants.MSGraphOAuthPermissionGrantsUri);
-            AuthenticationHelper.AddHeaders(request);
+            AddAuthZHeader(request, authtoken);
+
             var jsonContent = B2CAppGraph.Properties.Resources.oAuthPermissionGrantsTemplate;
             jsonContent = jsonContent
-                .Replace("#spId#", sPId)
+                .Replace("#spId#", spId)
                 .Replace("#MSGraphSPID#", msGraphSPId);
             request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = Program.RespondAndPrint(request);
@@ -118,22 +131,14 @@ namespace console_csharp_trustframeworkpolicy
         /// Creates the service principal.
         /// </summary>
         /// <param name="appId">The application identifier.</param>
-        /// <param name="shouldUseMSGraphOrAADGraph">if MSGraph or AADGraph.</param>
+        /// <param name="uri">The URI.</param>
+        /// <param name="token">The token.</param>
         /// <returns></returns>
-        private static string CreateServicePrincipal(string appId, bool shouldUseMSGraphOrAADGraph)
+        private static string CreateServicePrincipal(string appId, string uri, string authtoken)
         {
-            string uri = (shouldUseMSGraphOrAADGraph) ? Constants.MSGraphSPUri : Constants.AadGraphSPUri;
-
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
 
-            if (shouldUseMSGraphOrAADGraph)
-            {
-                AuthenticationHelper.AddHeaders(request);
-            }
-            else
-            {
-                AADGraphAuthenticationHelper.AddHeaders(request);
-            }
+            AddAuthZHeader(request, authtoken);
 
             var jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
             request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -185,17 +190,21 @@ namespace console_csharp_trustframeworkpolicy
             };
         }
 
+        private static void AddAuthZHeader(HttpRequestMessage requestMessage, string token)
+        {
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
         /// <summary>
         /// Gets the ms graph sp identifier.
         /// </summary>
-        /// <param name="shouldUseMSGraphOrAADGraph">if set to <c>true</c> [should use ms graph or aad graph].</param>
+        /// <param name="uri">The URI.</param>
+        /// <param name="authtoken">The authtoken.</param>
         /// <returns></returns>
-        private static string GetMsGraphSPId(bool shouldUseMSGraphOrAADGraph)
+        private static string GetMsGraphSPId(string uri, string authtoken)
         {
-            string uri = (shouldUseMSGraphOrAADGraph) ? Constants.MSGraphSPUri : Constants.AadGraphSPUri;
-
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            AuthenticationHelper.AddHeaders(request);
+            AddAuthZHeader(request, authtoken);
             string response = Program.GetResponse(request).Content.ReadAsStringAsync().Result;
 
             var wrapper = JsonConvert.DeserializeObject<ODataListWrapper<List<ServicePrincipal>>>(response, GetJsonSerializerSettings());
