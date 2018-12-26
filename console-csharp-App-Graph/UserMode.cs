@@ -9,6 +9,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
+using System.Net.Http.Headers;
 
 namespace console_csharp_trustframeworkpolicy
 {
@@ -61,49 +62,131 @@ namespace console_csharp_trustframeworkpolicy
             AuthenticationHelper.AddHeaders(request);
             Program.RespondAndPrint(request);
         }
-        
-        public static void CreateApp(string uri, params string[] args)
+
+        /// <summary>
+        /// Creates the full application using ms graph and aad graph.
+        /// This api calls all the first steps on MSGraph - app creation
+        /// Calls later two on AADGraph, SP creation, permission grant
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <param name="appName">Name of the application.</param>
+        public static void CreateFullAppUsingMSGraphAndAadGraph(string appName)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
+            Console.WriteLine("=============Creating app using MSGraph beta apis and AADGraph 1.6 apis.=============");
+
+            string appId = CreateAppFromMSGraph(appName);
+
+            var aadGraphToken = AADGraphAuthenticationHelper.GetTokenForUserAsync().Result;
+            //Console.WriteLine($"Token: Bearer {aadGraphToken}");
+
+            // create SP
+            string spId = CreateServicePrincipal(appId, Constants.AadGraphSPUri, aadGraphToken, "objectId");
+
+            string msGraphSPId = GetMsGraphSPId<AADGraphServicePrincipal>(Constants.AadGraphSPUri, aadGraphToken);
+            Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
+
+            //create oauthPermissionGrant
+            GrantConsent(spId, msGraphSPId, Constants.AadGraphOAuthPermissionGrantsUri, aadGraphToken);
+        }
+
+        /// <summary>
+        /// Creates the full application using ms graph only.
+        /// This api calls all the three steps on MSGraph - app creation, SP creation, permission grant
+        /// </summary>
+        /// <param name="appName">Name of the application.</param>
+        public static void CreateFullAppUsingMSGraphOnly(string appName)
+        {
+            Console.WriteLine("=============Creating app using MSGraph beta apis only.=============");
+            string token = AuthenticationHelper.TokenForUser;
+            string appId = CreateAppFromMSGraph(appName);
+
+            // create SP
+            string spId = CreateServicePrincipal(appId, Constants.MSGraphSPUri, token, "id");
+
+            string msGraphSPId = GetMsGraphSPId<MSGraphServicePrincipal>(Constants.MSGraphSPUri, token);
+            Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
+
+            //create oauthPermissionGrant
+            GrantConsent(spId, msGraphSPId, Constants.MSGraphOAuthPermissionGrantsUri, token);
+        }
+
+        /// <summary>
+        /// Grants the consent.
+        /// </summary>
+        /// <param name="msGraphSPId">The ms graph sp identifier.</param>
+        /// <param name="uri">The URI.</param>
+        /// <param name="authtoken">The authtoken.</param>
+        private static void GrantConsent(string spId, string msGraphSPId, string uri, string authtoken)
+        {
+            Console.WriteLine("----------Grant consent-----------------");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, uri);
+
+            AddAuthZHeader(request, authtoken);
+
+            var jsonContent = B2CAppGraph.Properties.Resources.oAuthPermissionGrantsTemplate;
+            jsonContent = jsonContent
+                .Replace("#spId#", spId)
+                .Replace("#MSGraphSPID#", msGraphSPId);
+            request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var response = Program.RespondAndPrint(request);
+        }
+
+        /// <summary>
+        /// Creates the service principal.
+        /// </summary>
+        /// <param name="appId">The application identifier.</param>
+        /// <param name="uri">The URI.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        private static string CreateServicePrincipal(string appId, string uri, string authtoken, string idPropertyKey)
+        {
+            Console.WriteLine("----------Creating SP-----------------");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, uri);
+
+            AddAuthZHeader(request, authtoken);
+
+            var jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
+            request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var response = Program.RespondAndPrint(request);
+            var jsonObject = Program.GetContentAsJson(response);
+            jsonObject.TryGetValue(idPropertyKey, out JToken token);
+            string sPId = token.Value<string>();
+            Console.WriteLine("newly created SP: {0}", sPId);
+            return sPId;
+        }
+
+
+        /// <summary>
+        /// The app creation always happens in MSGraph Beta. since v2 apps can't be created in AADGraph
+        /// </summary>
+        /// <param name="appName">Name of the application.</param>
+        /// <returns></returns>
+        private static string CreateAppFromMSGraph(string appName)
+        {
+            Console.WriteLine("----------Creating App-----------------");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Constants.AppsUri);
             AuthenticationHelper.AddHeaders(request);
 
             // create app
-            string jsonContent = B2CAppGraph.Properties.Resources.appTemplate.Replace("#appName#", args[0]);
+            var jsonContent = B2CAppGraph.Properties.Resources.appTemplate.Replace("#appName#", appName);
             request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = Program.RespondAndPrint(request);
-            var jsonObject = Program.GetContentAsJson(response); //JObject.Parse(response.Content.ToString());
+            var jsonObject = Program.GetContentAsJson(response);
+
             JToken token;
             jsonObject.TryGetValue("appId", out token);
-            string appId, sPId;
-            appId = token.Value<string>();
+            var appId = token.Value<string>();
+
+            if (string.IsNullOrWhiteSpace(appId))
+            {
+                throw new Exception("App wasn't created");
+            }
 
             Console.WriteLine("newly created app: {0}", appId);
-            if (token != null)
-            {
-                // create SP
-                request = new HttpRequestMessage(HttpMethod.Post, Constants.SPUri);
-                AuthenticationHelper.AddHeaders(request);
-                jsonContent = B2CAppGraph.Properties.Resources.servicePrincipalTemplate.Replace("#appId#", appId);
-                request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                response = Program.RespondAndPrint(request);
-                jsonObject = Program.GetContentAsJson(response);
-                jsonObject.TryGetValue("id", out token);
-                sPId = token.Value<string>();
-                Console.WriteLine("newly created SP: {0}", sPId);
 
-                string msGraphSPId = GetMsGraphSPId();
-                Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
-
-                //create oauthPermissionGrant
-                request = new HttpRequestMessage(HttpMethod.Post, Constants.OAuthPermissionGrantsUri);
-                AuthenticationHelper.AddHeaders(request);
-                jsonContent = B2CAppGraph.Properties.Resources.oAuthPermissionGrantsTemplate;
-                jsonContent = jsonContent
-                    .Replace("#spId#", sPId)
-                    .Replace("#MSGraphSPID#", msGraphSPId);                
-                request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                response = Program.RespondAndPrint(request);
-            }
+            return appId;
         }
 
         private static JsonSerializerSettings GetJsonSerializerSettings()
@@ -115,21 +198,34 @@ namespace console_csharp_trustframeworkpolicy
             };
         }
 
-        private static string GetMsGraphSPId()
+        private static void AddAuthZHeader(HttpRequestMessage requestMessage, string token)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, Constants.SPUri);
-            AuthenticationHelper.AddHeaders(request);
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        /// <summary>
+        /// Gets the ms graph sp identifier.
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <param name="authtoken">The authtoken.</param>
+        /// <returns></returns>
+        private static string GetMsGraphSPId<ServicePrincipalObjectType>(string uri, string authtoken) where ServicePrincipalObjectType: IServicePrincipal
+        {
+            Console.WriteLine("----------Get MSGraph SP-----------------");
+
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            AddAuthZHeader(request, authtoken);
             string response = Program.GetResponse(request).Content.ReadAsStringAsync().Result;
 
-            var wrapper = JsonConvert.DeserializeObject<ODataListWrapper<List<ServicePrincipal>>>(response, GetJsonSerializerSettings());
+            var wrapper = JsonConvert.DeserializeObject<ODataListWrapper<List<ServicePrincipalObjectType>>>(response, GetJsonSerializerSettings());
             var spList = wrapper.Value;
-            var graphSp = spList.FirstOrDefault(x => x.AppId.Equals(MSGraphAppId));
+            var graphSp = spList.FirstOrDefault(x => x.GetAppId().Equals(MSGraphAppId));
             if (graphSp == null)
             {
                 throw new Exception($"Service principal for MSgraph app {MSGraphAppId} is not found in tenant");
             }
 
-            return graphSp.Id;
+            return graphSp.GetId();
         }
 
         public static void LoginAsAdmin()

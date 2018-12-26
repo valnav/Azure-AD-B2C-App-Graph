@@ -27,8 +27,12 @@ namespace console_csharp_trustframeworkpolicy
                 case "LIST":
                     UserMode.HttpGetApps(Constants.AppsUri);
                     break;
-                case "CREATE":
-                    UserMode.CreateApp(Constants.AppsUri, args[1]);
+                case "CREATE1":
+                    UserMode.CreateFullAppUsingMSGraphOnly(args[1]);
+                    break;
+
+                case "CREATE2":
+                    UserMode.CreateFullAppUsingMSGraphAndAadGraph(args[1]);
                     break;
                               
                 default:
@@ -90,7 +94,8 @@ namespace console_csharp_trustframeworkpolicy
             {
                 case "LIST":
                     break;
-                case "CREATE":
+                case "CREATE1":
+                case "CREATE2":
                     if (args.Length <= 1)
                     {
                         PrintHelp(args);
@@ -141,7 +146,8 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("List                     : {0} List", appName);
-            Console.WriteLine("Create using MSGraphApis only                    : {0} Create [App Name]", appName);
+            Console.WriteLine("Create using MSGraphApis only                    : {0} Create1 [App Name]", appName);
+            Console.WriteLine("Create using MSGraphApis and AADGraph                    : {0} Create2 [App Name]", appName);
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("");
 

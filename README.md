@@ -4,8 +4,9 @@
 
 This sample demonstrates the following:
 
-* **Create** a V2 App using Microsoft Graph Apis which can be used in B2C
-* **List** all v2 apps in the tenant
+* **Create1** a V2 App (which can be used in B2C) using Microsoft Graph Apis 
+* **Create2** a V2 App (which can be used in B2C) using Microsoft Graph and AADGraph Apis.
+* **List** all v2 apps in the tenant using MSGraph Beta apis
 
 ## Getting Started
 
@@ -29,7 +30,7 @@ This sample demonstrates the following:
 
 1. Open the sample solution in Visual Studio.
 1. Build the sample.
-1. Using cmd or PowerShell, navigate to <Path to sample code>/bin/Debug. Run the executable **B2CPolicyClient.exe**.
+1. Using cmd or PowerShell, navigate to <Path to sample code>/bin/Debug. Run the executable **B2CAppGraph.exe**.
 1. Sign in as a global administrator.  (for example: admin@myb2ctenant.onmicrosoft.com)
 1. The output will show the results of calling the Graph API .
 
