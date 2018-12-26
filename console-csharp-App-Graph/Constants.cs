@@ -22,6 +22,6 @@
         public const string MSGraphOAuthPermissionGrantsUri = "https://graph.microsoft.com/beta/oauth2PermissionGrants";
 
         public const string AadGraphSPUri = "https://graph.windows.net/myorganization/servicePrincipals?api-version=1.6";
-        public const string AadGraphOAuthPermissionGrantsUri = "https://graph.microsoft.com/beta/oauth2PermissionGrants?api-version=1.6";
+        public const string AadGraphOAuthPermissionGrantsUri = "https://graph.windows.net/myorganization/oauth2PermissionGrants?api-version=1.6";
     }
 }
