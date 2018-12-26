@@ -78,9 +78,9 @@ namespace console_csharp_trustframeworkpolicy
             //Console.WriteLine($"Token: Bearer {aadGraphToken}");
 
             // create SP
-            string spId = CreateServicePrincipal(appId, Constants.AadGraphSPUri, aadGraphToken);
+            string spId = CreateServicePrincipal(appId, Constants.AadGraphSPUri, aadGraphToken, "objectId");
 
-            string msGraphSPId = GetMsGraphSPId(Constants.AadGraphSPUri, aadGraphToken);
+            string msGraphSPId = GetMsGraphSPId<AADGraphServicePrincipal>(Constants.AadGraphSPUri, aadGraphToken);
             Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
 
             //create oauthPermissionGrant
@@ -98,9 +98,9 @@ namespace console_csharp_trustframeworkpolicy
             string appId = CreateAppFromMSGraph(appName);
 
             // create SP
-            string spId = CreateServicePrincipal(appId, Constants.MSGraphSPUri, token);
+            string spId = CreateServicePrincipal(appId, Constants.MSGraphSPUri, token, "id");
 
-            string msGraphSPId = GetMsGraphSPId(Constants.MSGraphSPUri, token);
+            string msGraphSPId = GetMsGraphSPId<MSGraphServicePrincipal>(Constants.MSGraphSPUri, token);
             Console.WriteLine("MsGraph SP: {0}", msGraphSPId);
 
             //create oauthPermissionGrant
@@ -136,7 +136,7 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="uri">The URI.</param>
         /// <param name="token">The token.</param>
         /// <returns></returns>
-        private static string CreateServicePrincipal(string appId, string uri, string authtoken)
+        private static string CreateServicePrincipal(string appId, string uri, string authtoken, string idPropertyKey)
         {
             Console.WriteLine("----------Creating SP-----------------");
 
@@ -148,7 +148,7 @@ namespace console_csharp_trustframeworkpolicy
             request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = Program.RespondAndPrint(request);
             var jsonObject = Program.GetContentAsJson(response);
-            jsonObject.TryGetValue("id", out JToken token);
+            jsonObject.TryGetValue(idPropertyKey, out JToken token);
             string sPId = token.Value<string>();
             Console.WriteLine("newly created SP: {0}", sPId);
             return sPId;
@@ -206,7 +206,7 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="uri">The URI.</param>
         /// <param name="authtoken">The authtoken.</param>
         /// <returns></returns>
-        private static string GetMsGraphSPId(string uri, string authtoken)
+        private static string GetMsGraphSPId<ServicePrincipalObjectType>(string uri, string authtoken) where ServicePrincipalObjectType: IServicePrincipal
         {
             Console.WriteLine("----------Get MSGraph SP-----------------");
 
@@ -214,15 +214,15 @@ namespace console_csharp_trustframeworkpolicy
             AddAuthZHeader(request, authtoken);
             string response = Program.GetResponse(request).Content.ReadAsStringAsync().Result;
 
-            var wrapper = JsonConvert.DeserializeObject<ODataListWrapper<List<ServicePrincipal>>>(response, GetJsonSerializerSettings());
+            var wrapper = JsonConvert.DeserializeObject<ODataListWrapper<List<ServicePrincipalObjectType>>>(response, GetJsonSerializerSettings());
             var spList = wrapper.Value;
-            var graphSp = spList.FirstOrDefault(x => x.AppId.Equals(MSGraphAppId));
+            var graphSp = spList.FirstOrDefault(x => x.GetAppId().Equals(MSGraphAppId));
             if (graphSp == null)
             {
                 throw new Exception($"Service principal for MSgraph app {MSGraphAppId} is not found in tenant");
             }
 
-            return graphSp.Id;
+            return graphSp.GetId();
         }
 
         public static void LoginAsAdmin()
