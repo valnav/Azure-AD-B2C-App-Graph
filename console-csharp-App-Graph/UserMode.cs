@@ -72,6 +72,8 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="appName">Name of the application.</param>
         public static void CreateFullAppUsingMSGraphAndAadGraph(string appName)
         {
+            Console.WriteLine("=============Creating app using MSGraph beta apis and AADGraph 1.6 apis.=============");
+
             string appId = CreateAppFromMSGraph(appName);
 
             var aadGraphToken = AADGraphAuthenticationHelper.GetTokenForUserAsync().Result;
@@ -94,6 +96,7 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="appName">Name of the application.</param>
         public static void CreateFullAppUsingMSGraphOnly(string appName)
         {
+            Console.WriteLine("=============Creating app using MSGraph beta apis only.=============");
             string token = AuthenticationHelper.TokenForUser;
             string appId = CreateAppFromMSGraph(appName);
 
