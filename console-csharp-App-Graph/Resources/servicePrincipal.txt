@@ -1,5 +1,5 @@
 {
-	  "accountEnabled": true,
-	  "appId": "#appId#",
-	  "appRoleAssignmentRequired": false
+"accountEnabled": true,
+"appId": "#appId#",
+"appRoleAssignmentRequired": false
 }

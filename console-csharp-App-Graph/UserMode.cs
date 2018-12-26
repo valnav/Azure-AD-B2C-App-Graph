@@ -115,6 +115,8 @@ namespace console_csharp_trustframeworkpolicy
         /// <param name="authtoken">The authtoken.</param>
         private static void GrantConsent(string spId, string msGraphSPId, string uri, string authtoken)
         {
+            Console.WriteLine("----------Grant consent-----------------");
+
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
 
             AddAuthZHeader(request, authtoken);
@@ -136,6 +138,8 @@ namespace console_csharp_trustframeworkpolicy
         /// <returns></returns>
         private static string CreateServicePrincipal(string appId, string uri, string authtoken)
         {
+            Console.WriteLine("----------Creating SP-----------------");
+
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
 
             AddAuthZHeader(request, authtoken);
@@ -158,6 +162,7 @@ namespace console_csharp_trustframeworkpolicy
         /// <returns></returns>
         private static string CreateAppFromMSGraph(string appName)
         {
+            Console.WriteLine("----------Creating App-----------------");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Constants.AppsUri);
             AuthenticationHelper.AddHeaders(request);
 
@@ -203,6 +208,8 @@ namespace console_csharp_trustframeworkpolicy
         /// <returns></returns>
         private static string GetMsGraphSPId(string uri, string authtoken)
         {
+            Console.WriteLine("----------Get MSGraph SP-----------------");
+
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             AddAuthZHeader(request, authtoken);
             string response = Program.GetResponse(request).Content.ReadAsStringAsync().Result;

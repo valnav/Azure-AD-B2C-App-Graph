@@ -54,7 +54,7 @@ namespace console_csharp_trustframeworkpolicy
 
             try
             {
-                Console.WriteLine($"Token: Bearer {TokenForUser}");
+                //Console.WriteLine($"Token: Bearer {TokenForUser}");
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", TokenForUser);                
             }
             catch (Exception ex)
