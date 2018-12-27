@@ -6,10 +6,10 @@
         //       see README.md for instructions
 
         // Client ID is the application guid used uniquely identify itself to the v2.0 authentication endpoint
-        public const string ClientIdForUserAuthn = "17ddd594-ebdc-4196-a2fc-3bd3409ff7f2";
+        public const string ClientIdForUserAuthn = "8422df9d-e4e5-4611-b94f-b9da2667176f";
 
         // Your tenant Name, for example "myb2ctenant.onmicrosoft.com"
-        public const string Tenant = "cpimtestabhiagr.onmicrosoft.com";
+        public const string Tenant = "cpimtestabhiagr20181225.onmicrosoft.com";
 
         // leave these as-is - URIs used for auth
         public const string AuthorityUri = "https://login.microsoftonline.com/" + Tenant + "/oauth2/v2.0/token";

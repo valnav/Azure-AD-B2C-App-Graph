@@ -11,7 +11,13 @@ namespace console_csharp_trustframeworkpolicy
 {
     class AuthenticationHelper
     {
-        public static string[] Scopes = { "User.Read", "Directory.Read.All", "Directory.ReadWrite.All" };
+        public static string[] Scopes = 
+        {
+            "User.Read",
+            "Directory.Read.All",
+            "Directory.ReadWrite.All",
+            "Directory.AccessAsUser.All"
+        };
 
         public static PublicClientApplication IdentityClientApp = new PublicClientApplication(Constants.ClientIdForUserAuthn);
         public static string TokenForUser = null;
