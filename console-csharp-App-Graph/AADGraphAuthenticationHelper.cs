@@ -12,7 +12,13 @@ namespace console_csharp_trustframeworkpolicy
     class AADGraphAuthenticationHelper
     {
         const string ResourceId = "https://graph.windows.net/";
-        public static string[] Scopes = { ResourceId + "User.Read", ResourceId + "Directory.Read.All", ResourceId + "Directory.ReadWrite.All" };
+        public static string[] Scopes = 
+        {
+            ResourceId + "User.Read",
+            ResourceId + "Directory.Read.All",
+            ResourceId + "Directory.ReadWrite.All",
+            ResourceId + "Directory.AccessAsUser.All"
+        };
 
         public static PublicClientApplication IdentityClientApp = new PublicClientApplication(Constants.ClientIdForUserAuthn);
         public static string TokenForUser = null;

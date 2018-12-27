@@ -140,7 +140,7 @@ namespace console_csharp_trustframeworkpolicy
 
         private static void PrintHelp(string[] args)
         {
-            string appName = "B2CPolicyClient";
+            string appName = "B2CappGraph";
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("- Square brackets indicate optional arguments");
             Console.WriteLine("");
