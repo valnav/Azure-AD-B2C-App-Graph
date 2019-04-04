@@ -56,9 +56,9 @@ namespace console_csharp_trustframeworkpolicy
             }
         }
 
-        public static void HttpGetApps(string uri)
+        public static void HttpGetApps(string uri, string query = "")
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri + query);
             AuthenticationHelper.AddHeaders(request);
             Program.RespondAndPrint(request);
         }
@@ -156,8 +156,67 @@ namespace console_csharp_trustframeworkpolicy
             Console.WriteLine("newly created SP: {0}", sPId);
             return sPId;
         }
+        /// <summary>
+        /// The app creation always happens in AADGraph V1.6
+        /// </summary>
+        /// <param name="appName">Name of the application.</param>
+        /// <returns></returns>
+        public static string CreateAppFromAADGraphV1(string appName)
+        {
+            Console.WriteLine("----------Creating App using AAD Graph V1.6-----------------");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Constants.V1AppsUri);
+            var aadGraphToken = AADGraphAuthenticationHelper.GetTokenForUserAsync().Result;
+            //Console.WriteLine($"Token: Bearer {aadGraphToken}");
+
+            AddAuthZHeader(request, aadGraphToken);
+
+            // create app
+            var jsonContent = B2CAppGraph.Properties.Resources.v1AppTemplate.Replace("#appName#", appName);
+            request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var response = Program.RespondAndPrint(request);
+            var jsonObject = Program.GetContentAsJson(response);
+
+            JToken token;
+            jsonObject.TryGetValue("appId", out token);
+            var appId = token.Value<string>();
+
+            if (string.IsNullOrWhiteSpace(appId))
+            {
+                throw new Exception("App wasn't created");
+            }
+
+            Console.WriteLine("newly created app: {0}", appId);
+
+            var returnedCode = PatchV1AppWithSignInAudience(appId);
+            if(returnedCode)
+                Console.WriteLine("Patched app successfully with signInAudience: {0}", appId);
+            else
+                Console.WriteLine("Patched app FAILED with signInAudience");
 
 
+            return appId;
+        }
+
+        /// <summary>
+        /// The app creation always happens in AADGraph V1.6
+        /// </summary>
+        /// <param name="appName">Name of the application.</param>
+        /// <returns></returns>
+        private static bool PatchV1AppWithSignInAudience(string appId)
+        {
+            string token = AuthenticationHelper.TokenForUser;
+            HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), Constants.AppsUri + "/" + appId);
+            AuthenticationHelper.AddHeaders(request);
+
+            //signInAudience=AzureADandPersonalMicrosoftAccount 
+            // create app
+            var jsonContent = "{\"signInAudience\":=\"AzureADandPersonalMicrosoftAccount\"}";
+            request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var response = Program.RespondAndPrint(request);
+
+            return response.IsSuccessStatusCode;
+            
+        }
         /// <summary>
         /// The app creation always happens in MSGraph Beta. since v2 apps can't be created in AADGraph
         /// </summary>

@@ -107,5 +107,8 @@
   <ItemGroup>
     <None Include="Resources\updateAppTemplate.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\v1AppTemplate.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

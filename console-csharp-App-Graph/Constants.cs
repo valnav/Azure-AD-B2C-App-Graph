@@ -1,4 +1,6 @@
-﻿namespace console_csharp_trustframeworkpolicy
+﻿using System;
+
+namespace console_csharp_trustframeworkpolicy
 {
     internal class Constants
     {
@@ -6,10 +8,10 @@
         //       see README.md for instructions
 
         // Client ID is the application guid used uniquely identify itself to the v2.0 authentication endpoint
-        public const string ClientIdForUserAuthn = "8422df9d-e4e5-4611-b94f-b9da2667176f";
+        public const string ClientIdForUserAuthn = "dc852c37-8bad-4f6d-992c-efe3d7b15655";
 
         // Your tenant Name, for example "myb2ctenant.onmicrosoft.com"
-        public const string Tenant = "cpimtestabhiagr20181225.onmicrosoft.com";
+        public const string Tenant = "b2cconsumer.onmicrosoft.com";
 
         // leave these as-is - URIs used for auth
         public const string AuthorityUri = "https://login.microsoftonline.com/" + Tenant + "/oauth2/v2.0/token";
@@ -23,5 +25,9 @@
 
         public const string AadGraphSPUri = "https://graph.windows.net/myorganization/servicePrincipals?api-version=1.6";
         public const string AadGraphOAuthPermissionGrantsUri = "https://graph.windows.net/myorganization/oauth2PermissionGrants?api-version=1.6";
+
+        
+        
+        public const string V1AppsUri = "https://graph.windows.net/myorganization/applications?api-version=1.6";
     }
 }

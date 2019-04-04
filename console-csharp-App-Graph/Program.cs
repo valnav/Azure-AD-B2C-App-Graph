@@ -34,7 +34,9 @@ namespace console_csharp_trustframeworkpolicy
                 case "CREATE2":
                     UserMode.CreateFullAppUsingMSGraphAndAadGraph(args[1]);
                     break;
-                              
+                case "CREATEV1":
+                    UserMode.CreateAppFromAADGraphV1(args[1]);
+                    break;
                 default:
                     return;
             }
@@ -96,6 +98,7 @@ namespace console_csharp_trustframeworkpolicy
                     break;
                 case "CREATE1":
                 case "CREATE2":
+                case "CREATEV1":
                     if (args.Length <= 1)
                     {
                         PrintHelp(args);

@@ -62,8 +62,17 @@ namespace B2CAppGraph.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///&quot;displayName&quot;: &quot;#appName#&quot;,
-        ///&quot;isFallbackPublicClient&quot;: true
+        ///    &quot;displayName&quot;: &quot;#appName#&quot;,
+        ///    &quot;isFallbackPublicClient&quot;: false,
+        ///    &quot;web&quot;: {
+        ///        &quot;redirectUris&quot;: [
+        ///            &quot;https://jwt.ms&quot;
+        ///        ],
+        ///		 &quot;implicitGrantSettings&quot;: {
+        ///                    &quot;enableIdTokenIssuance&quot;: false,
+        ///                    &quot;enableAccessTokenIssuance&quot;: true
+        ///        }
+        ///    }
         ///}.
         /// </summary>
         internal static string appTemplate {
@@ -74,12 +83,15 @@ namespace B2CAppGraph.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///    &quot;clientId&quot;: &quot;#appId#&quot;,
-        ///    &quot;consentType&quot;: &quot;AllPrincipals&quot;,
-        ///    &quot;principalId&quot;: null,
-        ///    &quot;resourceId&quot;: &quot;#sPId#&quot;,
-        ///    &quot;scope&quot;: &quot; openid offline_access&quot;
+        ///&quot;clientId&quot;: &quot;#spId#&quot;,
+        ///&quot;consentType&quot;: &quot;AllPrincipals&quot;,
+        ///&quot;principalId&quot;: null,
+        ///&quot;expiryTime&quot;: &quot;2019-06-09T00:07:10.7595352Z&quot;,
+        ///&quot;resourceId&quot;: &quot;#MSGraphSPID#&quot;,
+        ///&quot;scope&quot;: &quot; openid offline_access&quot;
         ///}
+        ///
+        ///
         ///.
         /// </summary>
         internal static string oAuthPermissionGrantsTemplate {
@@ -90,9 +102,9 @@ namespace B2CAppGraph.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///	  &quot;accountEnabled&quot;: true,
-        ///	  &quot;appId&quot;: &quot;#appId#&quot;,
-        ///	  &quot;appRoleAssignmentRequired&quot;: false
+        ///&quot;accountEnabled&quot;: true,
+        ///&quot;appId&quot;: &quot;#appId#&quot;,
+        ///&quot;appRoleAssignmentRequired&quot;: false
         ///}.
         /// </summary>
         internal static string servicePrincipalTemplate {
@@ -114,6 +126,25 @@ namespace B2CAppGraph.Properties {
         internal static string updateAppTemplate {
             get {
                 return ResourceManager.GetString("updateAppTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///            
+        ///           &quot;availableToOtherTenants&quot;: true,
+        ///            &quot;displayName&quot;: &quot;#appName#&quot;,
+        ///            &quot;oauth2AllowIdTokenImplicitFlow&quot;: true,
+        ///            &quot;oauth2AllowImplicitFlow&quot;: true,
+        ///            &quot;oauth2AllowUrlPathMatching&quot;: false
+        ///			&quot;replyUrls&quot;: [
+        ///				&quot;https://jwt.ms&quot;
+        ///			]
+        /// }.
+        /// </summary>
+        internal static string v1AppTemplate {
+            get {
+                return ResourceManager.GetString("v1AppTemplate", resourceCulture);
             }
         }
     }

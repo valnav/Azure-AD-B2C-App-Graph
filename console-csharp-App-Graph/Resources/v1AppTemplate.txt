@@ -1,0 +1,10 @@
+{
+           "availableToOtherTenants": true,
+            "displayName": "#appName#",
+            "oauth2AllowIdTokenImplicitFlow": true,
+            "oauth2AllowImplicitFlow": true,
+            "oauth2AllowUrlPathMatching": false,
+			"replyUrls": [
+				"https://jwt.ms"
+			]
+ }
