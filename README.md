@@ -1,3 +1,5 @@
+# This sample is for preview purpose only and not supported for prodcution scenarios.
+
 # Manage V2 Apps for consumption in B2C
 
 ## Features
